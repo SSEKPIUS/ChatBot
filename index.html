@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+        <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.20/lodash.min.js"></script>
+        <style>
+           body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+            }
+
+            .chat-container {
+            background-color: #f2f2f2;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            width: 500px;
+            max-width: 90%;
+            }
+
+            .chat-header {
+            background-color: #00bfff;
+            color: white;
+            font-size: 20px;
+            padding: 10px;
+            text-align: center;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+            }
+
+            .chat-conversation {
+            background-color: white;
+            flex: 1;
+            overflow-y: scroll;
+            padding: 10px;
+            }
+
+            .chat-message {
+            margin-bottom: 10px;
+            padding: 10px;
+            }
+
+            .chat-message-sender {
+            align-self: flex-end;
+            background-color: #ddd;
+            border-radius: 10px 10px 0 10px;
+            }
+
+            .chat-message-receiver {
+            align-self: flex-start;
+            background-color: #00bfff;
+            color: white;
+            border-radius: 10px 10px 10px 0;
+            }
+
+            .chat-input-form {
+            background-color: #f2f2f2;
+            display: flex;
+            padding: 10px;
+            border-top: 1px solid #ddd;
+            }
+
+            .chat-issue-select,
+            .chat-input {
+            background-color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            padding: 10px;
+            flex: 1;
+            margin-right: 10px;
+            }
+
+            .chat-submit {
+            background-color: #00bfff;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            font-size: 16px;
+            padding: 10px;
+            cursor: pointer;
+            }
+
+        </style>
+    </head>
+    <body>
+        <div class="chat-container">
+            <div class="chat-header">Customer Assistance Chatbot (<span id="dv"></span>)</div>
+            <div class="chat-conversation">
+                <div class="chat-message chat-message-receiver">
+                    <p>Hi! How can I help you today?</p>
+                </div>
+            </div>
+            <form class="chat-input-form">
+                <select class="chat-issue-select" id="issue-select">
+                    <option value="" selected disabled hidden>Select an issue</option>
+                    <option value="issue1">Issue 1</option>
+                    <option value="issue2">Issue 2</option>
+                    <option value="issue3">Issue 3</option>
+                </select>
+                <input class="chat-input" id="chat-input" type="text"
+                    placeholder="Type your message here..." />
+                <button class="chat-submit" type="submit">Submit</button>
+            </form>
+        </div>
+
+        <script>
+           let debounce = _.debounce(() => detectDeviceType(), 500);
+           function detectDeviceType() {
+                const width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+                const height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+                console.log("changed!!");
+                if (width <= 720 || height <= 720) {
+                    document.getElementById("dv").innerText = 'mobile';
+                }else{
+                    document.getElementById("dv").innerText = 'desktop';
+                }
+            }
+
+            window.addEventListener('resize', function() {
+                debounce();
+            });
+
+
+            
+            const chatConversation = document.querySelector('.chat-conversation');
+            const chatInputForm = document.querySelector('.chat-input-form');
+            const chatIssueSelect = document.querySelector('#issue-select');
+            const chatInput = document.querySelector('#chat-input');
+
+            chatInputForm.addEventListener('submit', e => {
+            e.preventDefault();
+
+            let selectedIssue = chatIssueSelect.value;
+            let userMessage = chatInput.value;
+
+            switch (selectedIssue) {
+                case 'issue1':
+                addMessage(`Issue 1: ${userMessage}`, 'sender');
+                addMessage('Our preset answer for Issue 1', 'receiver');
+                break;
+                case 'issue2':
+                addMessage(`Issue 2: ${userMessage}`, 'sender');
+                addMessage('Our preset answer for Issue 2', 'receiver');
+                break;
+                case 'issue3':
+                addMessage(`Issue 3: ${userMessage}`, 'sender');
+                addMessage('Our preset answer for Issue 3', 'receiver');
+                break;
+                default:
+                addMessage(`Other: ${userMessage}`, 'sender');
+                addMessage('Sorry, please contact our human operator for assistance.', 'receiver');
+            }
+
+            chatInput.value = '';
+            chatIssueSelect.value = '';
+            chatConversation.scrollTop = chatConversation.scrollHeight;
+            });
+
+            function addMessage(message, senderOrReceiver) {
+            let newMessage = document.createElement('div');
+            newMessage.classList.add(`chat-message`);
+            newMessage.classList.add(`chat-message-${senderOrReceiver}`);
+            newMessage.innerHTML = `<p>${message}</p>`;
+            chatConversation.appendChild(newMessage);
+            }
+
+        </script>
+    </body>
+</html>
